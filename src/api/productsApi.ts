@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-interface Product {
+export interface Product {
   id: number;
   name: string;
   year: number;
@@ -8,7 +8,7 @@ interface Product {
   ['pantone_value']: string;
 }
 
-interface ProductsPageData {
+export interface ProductsPageData {
   page: number;
   ['per_page']: number;
   ['total_pages']: number;
@@ -21,7 +21,8 @@ interface ProductData {
 
 const queryFn = (url: string) => () => fetch(url).then((res) => res.json());
 
-export const useProductsPage = (page = 1) => {
+export const useProductsPage = (page?: string | null) => {
+  page = page ? page : '1';
   const queryURL = `https://reqres.in/api/products?per_page=5&page=${page}`;
   const queryKey = [`products-page-${page}`];
 
@@ -30,9 +31,9 @@ export const useProductsPage = (page = 1) => {
   return { data, isPending, error };
 };
 
-export const useProduct = (id: number) => {
-  const queryURL = `https://reqres.in/api/products?id=${id}`;
-  const queryKey = [`products-id-${id}`];
+export const useProduct = (id?: string | null) => {
+  const queryURL = id ? `https://reqres.in/api/products?id=${id}` : '';
+  const queryKey = id ? [`products-id-${id}`] : ['blank'];
 
   const { data, isPending, error } = useQuery<ProductData>({ queryKey, queryFn: queryFn(queryURL) });
 

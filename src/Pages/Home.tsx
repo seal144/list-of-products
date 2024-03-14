@@ -1,12 +1,43 @@
-import { useProductsPage, useProduct } from '../api/productsApi';
+import { useContext } from 'react';
+import { ProductsDataContext } from '../context/ProductsDataContext';
 
 const Home = () => {
-  const { data } = useProductsPage(2);
-  const { data: productData } = useProduct(1);
+  const { productFiltered, productsPage, setSearchParams } = useContext(ProductsDataContext);
+  const addParamsId = () => {
+    if (setSearchParams) {
+      setSearchParams((prevParams) => {
+        const page = prevParams.get('page');
+        return `${page ? `page=${page}` : ''}&id=8`;
+      });
+    }
+  };
+  const addParamsPage = () => {
+    if (setSearchParams) {
+      setSearchParams((prevParams) => {
+        const id = prevParams.get('id');
+        return `page=3&${id ? `id=${id}` : ''}`;
+      });
+    }
+  };
+  const resetParams = () => {
+    if (setSearchParams) {
+      setSearchParams('');
+    }
+  };
 
-  console.log(data);
-  console.log(productData);
-  return <div>Home</div>;
+  console.log(productFiltered);
+  console.log(productsPage);
+
+  return (
+    <>
+      <div>Home</div>
+      <button onClick={addParamsId}>id</button>
+      <button onClick={addParamsPage}>page</button>
+      <button onClick={resetParams}>reset</button>
+      <p>{productFiltered?.name}</p>
+      <p>{productsPage?.data[0].name}</p>
+    </>
+  );
 };
 
 export default Home;
