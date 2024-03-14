@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { ProductsDataContext } from '../context/ProductsDataContext';
+import ProductsTable from '../components/ProductsTable';
 
 const Home = () => {
   const { productFiltered, productsPage, setSearchParams } = useContext(ProductsDataContext);
@@ -36,6 +37,7 @@ const Home = () => {
       <button onClick={resetParams}>reset</button>
       <p>{productFiltered?.name}</p>
       <p>{productsPage?.data[0].name}</p>
+      <ProductsTable />
     </>
   );
 };

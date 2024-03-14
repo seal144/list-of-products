@@ -1,11 +1,17 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+import Layout from './layouts/Layout';
 import Home from './pages/Home';
 import ProductsDataProvider from './context/ProductsDataContext';
-// TODO - replace this styles with mui
-import './App.css';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 const queryClient = new QueryClient();
 
@@ -14,10 +20,11 @@ function App() {
     <Router>
       <QueryClientProvider client={queryClient}>
         <ProductsDataProvider>
-          {/* TODO - replace this wrapper with mui or Layout Component */}
-          <div className="App">
-            <Home />
-          </div>
+          <ThemeProvider theme={darkTheme}>
+            <Layout>
+              <Home />
+            </Layout>
+          </ThemeProvider>
         </ProductsDataProvider>
       </QueryClientProvider>
     </Router>
