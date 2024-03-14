@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Box, Table, TableBody, TableHead, TableRow, TableCell, styled } from '@mui/material';
+import { Box, Pagination, Table, TableBody, TableHead, TableRow, TableCell, styled } from '@mui/material';
 
 import { ProductsDataContext } from '../context/ProductsDataContext';
 import ProductsTableRow from './ProductsTableRow';
@@ -16,28 +16,45 @@ const HeadTableCell = styled(TableCell)(() => ({
 export const NARROW_TABLE_CELL = 40;
 
 const ProductsTable = () => {
-  const { productsPage } = useContext(ProductsDataContext);
+  const { productsPage, searchParams, setSearchParams } = useContext(ProductsDataContext);
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+    if (setSearchParams) {
+      setSearchParams((prevParams) => {
+        const id = prevParams.get('id');
+        return `page=${page}&${id ? `id=${id}` : ''}`;
+      });
+    }
+  };
 
   return (
-    <Box sx={{ overflow: 'auto' }}>
-      <Table sx={{ minWidth: 280 }}>
-        <StyledTableHead>
-          <TableRow>
-            <HeadTableCell width={NARROW_TABLE_CELL} align="left">
-              Id
-            </HeadTableCell>
-            <HeadTableCell align="center">Name</HeadTableCell>
-            <HeadTableCell width={NARROW_TABLE_CELL} align="right">
-              Year
-            </HeadTableCell>
-          </TableRow>
-        </StyledTableHead>
-        <TableBody>
-          {productsPage?.data &&
-            productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
-        </TableBody>
-      </Table>
-    </Box>
+    <>
+      <Box sx={{ overflow: 'auto' }}>
+        <Table sx={{ minWidth: 280 }}>
+          <StyledTableHead>
+            <TableRow>
+              <HeadTableCell width={NARROW_TABLE_CELL} align="left">
+                Id
+              </HeadTableCell>
+              <HeadTableCell align="center">Name</HeadTableCell>
+              <HeadTableCell width={NARROW_TABLE_CELL} align="right">
+                Year
+              </HeadTableCell>
+            </TableRow>
+          </StyledTableHead>
+          <TableBody>
+            {productsPage?.data &&
+              productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
+          </TableBody>
+        </Table>
+      </Box>
+      <Pagination
+        sx={(theme) => ({ float: 'right', marginTop: theme.spacing(1) })}
+        count={productsPage?.total_pages}
+        onChange={handlePageChange}
+        page={searchParams?.get('page') ? Number(searchParams?.get('page')) : 1}
+      />
+    </>
   );
 };
 

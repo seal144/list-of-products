@@ -9,6 +9,7 @@ interface ProductsDataContextValue {
   productFiltered?: Product;
   productFilteredLoading: boolean;
   productFilteredError: Error | null;
+  searchParams?: URLSearchParams;
   setSearchParams?: SetURLSearchParams;
 }
 
@@ -41,6 +42,7 @@ const ProductsDataProvider = ({ children }: PropsWithChildren) => {
         productFiltered,
         productFilteredLoading,
         productFilteredError,
+        searchParams,
         setSearchParams,
       }}
     >

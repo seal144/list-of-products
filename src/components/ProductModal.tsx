@@ -32,7 +32,7 @@ const ProductModal = ({ handleClose, open, product }: ProductModalProps) => {
       </IconButton>
       <DialogContent dividers>
         {productEntries.map((entry) => (
-          <Typography gutterBottom>
+          <Typography key={entry[0]} gutterBottom>
             {parseKey(entry[0])}: {entry[1]}
           </Typography>
         ))}
