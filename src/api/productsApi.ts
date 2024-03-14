@@ -5,13 +5,13 @@ export interface Product {
   name: string;
   year: number;
   color: string;
-  ['pantone_value']: string;
+  pantone_value: string;
 }
 
 export interface ProductsPageData {
   page: number;
-  ['per_page']: number;
-  ['total_pages']: number;
+  per_page: number;
+  total_pages: number;
   data: Product[];
 }
 

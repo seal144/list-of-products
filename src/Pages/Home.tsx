@@ -26,9 +26,6 @@ const Home = () => {
     }
   };
 
-  console.log(productFiltered);
-  console.log(productsPage);
-
   return (
     <>
       <div>Home</div>
