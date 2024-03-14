@@ -1,9 +1,10 @@
 import { useContext, useMemo } from 'react';
 import {
   Box,
-  Pagination,
+  CircularProgress,
   IconButton,
   InputAdornment,
+  Pagination,
   Table,
   TableBody,
   TableHead,
@@ -24,12 +25,23 @@ const HeadTableCell = styled(TableCell)(() => ({
 export const NARROW_TABLE_CELL = 40;
 
 const ProductsTable = () => {
-  const { productsPage, productSearched, searchParams, setSearchParams } = useContext(ProductsDataContext);
+  const { productsPage, productsPageLoading, productSearched, productSearchedLoading, searchParams, setSearchParams } =
+    useContext(ProductsDataContext);
 
   const showSearchResult = useMemo(() => {
     if (searchParams?.get('id')) return true;
     return false;
   }, [searchParams]);
+
+  const isLoading = useMemo(() => {
+    if (showSearchResult && productSearchedLoading) {
+      return true;
+    }
+    if (!showSearchResult && productsPageLoading) {
+      return true;
+    }
+    return false;
+  }, [showSearchResult, productsPageLoading, productSearchedLoading]);
 
   const clearSearchId = () => {
     if (setSearchParams) {
@@ -97,15 +109,31 @@ const ProductsTable = () => {
               </HeadTableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {showSearchResult
-              ? productSearched && <ProductsTableRow product={productSearched} />
-              : productsPage?.data &&
-                productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
-          </TableBody>
+          {!isLoading && (
+            <TableBody>
+              {showSearchResult
+                ? productSearched && <ProductsTableRow product={productSearched} />
+                : productsPage?.data &&
+                  productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
+            </TableBody>
+          )}
         </Table>
       </Box>
-      {!showSearchResult && (
+      {isLoading && (
+        <Box sx={{ position: 'relative' }}>
+          <Box
+            sx={(theme) => ({
+              position: 'absolute',
+              top: theme.spacing(4),
+              left: '50%',
+              transform: 'translateX(-50%)',
+            })}
+          >
+            <CircularProgress />
+          </Box>
+        </Box>
+      )}
+      {!isLoading && !showSearchResult && (
         <Pagination
           sx={(theme) => ({ float: 'right', marginTop: theme.spacing(1) })}
           count={productsPage?.total_pages}
