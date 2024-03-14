@@ -6,9 +6,9 @@ interface ProductsDataContextValue {
   productsPage?: ProductsPageData;
   productsPageLoading: boolean;
   productsPageError: Error | null;
-  productFiltered?: Product;
-  productFilteredLoading: boolean;
-  productFilteredError: Error | null;
+  productSearched?: Product;
+  productSearchedLoading: boolean;
+  productSearchedError: Error | null;
   searchParams?: URLSearchParams;
   setSearchParams?: SetURLSearchParams;
 }
@@ -16,8 +16,8 @@ interface ProductsDataContextValue {
 export const ProductsDataContext = createContext<ProductsDataContextValue>({
   productsPageLoading: false,
   productsPageError: null,
-  productFilteredLoading: false,
-  productFilteredError: null,
+  productSearchedLoading: false,
+  productSearchedError: null,
 });
 
 const ProductsDataProvider = ({ children }: PropsWithChildren) => {
@@ -28,9 +28,9 @@ const ProductsDataProvider = ({ children }: PropsWithChildren) => {
     error: productsPageError,
   } = useProductsPage(searchParams.get('page'));
   const {
-    data: productFiltered,
-    isPending: productFilteredLoading,
-    error: productFilteredError,
+    data: productSearched,
+    isPending: productSearchedLoading,
+    error: productSearchedError,
   } = useProduct(searchParams.get('id'));
 
   return (
@@ -39,9 +39,9 @@ const ProductsDataProvider = ({ children }: PropsWithChildren) => {
         productsPage,
         productsPageLoading,
         productsPageError,
-        productFiltered,
-        productFilteredLoading,
-        productFilteredError,
+        productSearched,
+        productSearchedLoading,
+        productSearchedError,
         searchParams,
         setSearchParams,
       }}

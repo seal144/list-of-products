@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import {
   Box,
   Pagination,
@@ -24,7 +24,12 @@ const HeadTableCell = styled(TableCell)(() => ({
 export const NARROW_TABLE_CELL = 40;
 
 const ProductsTable = () => {
-  const { productsPage, searchParams, setSearchParams } = useContext(ProductsDataContext);
+  const { productsPage, productSearched, searchParams, setSearchParams } = useContext(ProductsDataContext);
+
+  const showSearchResult = useMemo(() => {
+    if (searchParams?.get('id')) return true;
+    return false;
+  }, [searchParams]);
 
   const clearSearchId = () => {
     if (setSearchParams) {
@@ -93,17 +98,21 @@ const ProductsTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {productsPage?.data &&
-              productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
+            {showSearchResult
+              ? productSearched && <ProductsTableRow product={productSearched} />
+              : productsPage?.data &&
+                productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
           </TableBody>
         </Table>
       </Box>
-      <Pagination
-        sx={(theme) => ({ float: 'right', marginTop: theme.spacing(1) })}
-        count={productsPage?.total_pages}
-        onChange={handlePageChange}
-        page={searchParams?.get('page') ? Number(searchParams?.get('page')) : 1}
-      />
+      {!showSearchResult && (
+        <Pagination
+          sx={(theme) => ({ float: 'right', marginTop: theme.spacing(1) })}
+          count={productsPage?.total_pages}
+          onChange={handlePageChange}
+          page={searchParams?.get('page') ? Number(searchParams?.get('page')) : 1}
+        />
+      )}
     </>
   );
 };
