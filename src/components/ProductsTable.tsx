@@ -1,13 +1,21 @@
 import { useContext } from 'react';
-import { Box, Pagination, Table, TableBody, TableHead, TableRow, TableCell, styled } from '@mui/material';
+import {
+  Box,
+  Pagination,
+  IconButton,
+  InputAdornment,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+  TextField,
+  styled,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { ProductsDataContext } from '../context/ProductsDataContext';
 import ProductsTableRow from './ProductsTableRow';
-
-const StyledTableHead = styled(TableHead)(() => ({
-  backgroundColor: '#244',
-  textTransform: 'uppercase',
-}));
 
 const HeadTableCell = styled(TableCell)(() => ({
   border: '2px solid #111',
@@ -17,6 +25,32 @@ export const NARROW_TABLE_CELL = 40;
 
 const ProductsTable = () => {
   const { productsPage, searchParams, setSearchParams } = useContext(ProductsDataContext);
+
+  const clearSearchId = () => {
+    if (setSearchParams) {
+      setSearchParams((prevParams) => {
+        const page = prevParams.get('page');
+        return page ? `page=${page}` : '';
+      });
+    }
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value.match(/[^0-9]/)) {
+      event.target.value = '';
+      return;
+    }
+    if (setSearchParams && event.target.value) {
+      setSearchParams((prevParams) => {
+        const page = prevParams.get('page');
+        return `${page ? `page=${page}` : ''}&id=${event.target.value}`;
+      });
+    }
+
+    if (!event.target.value) {
+      clearSearchId();
+    }
+  };
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
     if (setSearchParams) {
@@ -29,9 +63,25 @@ const ProductsTable = () => {
 
   return (
     <>
+      <TextField
+        label="Search by ID"
+        variant="outlined"
+        value={searchParams?.get('id') ? searchParams?.get('id') : ''}
+        onChange={handleSearchChange}
+        sx={(theme) => ({ marginBottom: theme.spacing(2) })}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={clearSearchId} disabled={!searchParams?.get('id')}>
+                <CloseIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
       <Box sx={{ overflow: 'auto' }}>
         <Table sx={{ minWidth: 280 }}>
-          <StyledTableHead>
+          <TableHead sx={{ backgroundColor: '#244', textTransform: 'uppercase' }}>
             <TableRow>
               <HeadTableCell width={NARROW_TABLE_CELL} align="left">
                 Id
@@ -41,7 +91,7 @@ const ProductsTable = () => {
                 Year
               </HeadTableCell>
             </TableRow>
-          </StyledTableHead>
+          </TableHead>
           <TableBody>
             {productsPage?.data &&
               productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
