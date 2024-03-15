@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 import Layout from './layouts/Layout';
-import Home from './pages/Home';
+import Home from './views/Home';
 import ProductsDataProvider from './context/ProductsDataContext';
 
 const darkTheme = createTheme({
