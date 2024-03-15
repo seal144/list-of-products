@@ -52,7 +52,7 @@ const ProductsTable = () => {
     if (fetchError?.message === ErrorMessages.NotFound || fetchError?.message === ErrorMessages.Client) {
       return `${defaultErrorMessage} (client error)`;
     }
-    if (fetchError?.message === ErrorMessages.Client) {
+    if (fetchError?.message === ErrorMessages.Server) {
       return `${defaultErrorMessage} (server error)`;
     }
     if (fetchError) {
@@ -95,7 +95,7 @@ const ProductsTable = () => {
           return `${page ? `page=${page}` : ''}${searchValue ? `&id=${searchValue}` : ''}`;
         });
       }
-    }, 500);
+    }, 800);
 
     return () => {
       if (setSearchParamsTimeout.current) {

@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { Container as ContainerMui, styled } from '@mui/material';
 
-const Background = styled('div')((theme) => ({
+const Background = styled('div')(() => ({
   backgroundColor: '#282c34',
 }));
 

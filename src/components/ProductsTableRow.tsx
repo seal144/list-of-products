@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Product } from '../api/productsApi';
 import { TableCell, TableRow } from '@mui/material';
 
+import { Product } from '../api/productsApi';
 import parseKey from '../utils/parseKey';
 import ProductModal from './ProductModal';
 import { NARROW_TABLE_CELL } from './ProductsTable';

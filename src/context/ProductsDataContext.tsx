@@ -1,5 +1,6 @@
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { useSearchParams, SetURLSearchParams } from 'react-router-dom';
+
 import { Product, useProductQuery, useProductsPageQuery, ProductsPageData } from '../api/productsApi';
 
 interface ProductsDataContextValue {

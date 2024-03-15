@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { useProductsPageQuery, useProductQuery } from './productsApi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ErrorMessages } from './productsApi';
+
+import { ErrorMessages, useProductsPageQuery, useProductQuery } from './productsApi';
 
 describe('useProductsPageQuery', () => {
   let wrapper;
