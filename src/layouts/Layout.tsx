@@ -7,8 +7,8 @@ const Background = styled('div')((theme) => ({
 
 const Container = styled(ContainerMui)(({ theme }) => ({
   minHeight: '100vh',
-  paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(3),
+  paddingTop: theme.spacing(4),
+  paddingBottom: theme.spacing(4),
 }));
 
 const Layout = ({ children }: PropsWithChildren) => {
