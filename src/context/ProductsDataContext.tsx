@@ -1,23 +1,21 @@
-import { createContext, PropsWithChildren } from 'react';
+import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { useSearchParams, SetURLSearchParams } from 'react-router-dom';
 import { Product, useProduct, useProductsPage, ProductsPageData } from '../api/productsApi';
 
 interface ProductsDataContextValue {
   productsPage?: ProductsPageData;
   productsPageLoading: boolean;
-  productsPageError: Error | null;
   productSearched?: Product;
   productSearchedLoading: boolean;
-  productSearchedError: Error | null;
+  fetchError: Error | null;
   searchParams?: URLSearchParams;
   setSearchParams?: SetURLSearchParams;
 }
 
 export const ProductsDataContext = createContext<ProductsDataContextValue>({
   productsPageLoading: false,
-  productsPageError: null,
   productSearchedLoading: false,
-  productSearchedError: null,
+  fetchError: null,
 });
 
 const ProductsDataProvider = ({ children }: PropsWithChildren) => {
@@ -32,16 +30,26 @@ const ProductsDataProvider = ({ children }: PropsWithChildren) => {
     isPending: productSearchedLoading,
     error: productSearchedError,
   } = useProduct(searchParams.get('id'));
+  const [fetchError, setFetchError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (productSearchedError) {
+      return setFetchError(productSearchedError);
+    }
+    if (productsPageError) {
+      return setFetchError(productsPageError);
+    }
+    setFetchError(null);
+  }, [productSearchedError, productsPageError]);
 
   return (
     <ProductsDataContext.Provider
       value={{
         productsPage,
         productsPageLoading,
-        productsPageError,
         productSearched,
         productSearchedLoading,
-        productSearchedError,
+        fetchError,
         searchParams,
         setSearchParams,
       }}

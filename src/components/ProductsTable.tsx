@@ -16,7 +16,9 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 
 import { ProductsDataContext } from '../context/ProductsDataContext';
+import { ErrorMessages } from '../api/productsApi';
 import ProductsTableRow from './ProductsTableRow';
+import ErrorMessage from './ErrorMessage';
 
 const HeadTableCell = styled(TableCell)(() => ({
   border: '2px solid #111',
@@ -25,23 +27,45 @@ const HeadTableCell = styled(TableCell)(() => ({
 export const NARROW_TABLE_CELL = 40;
 
 const ProductsTable = () => {
-  const { productsPage, productsPageLoading, productSearched, productSearchedLoading, searchParams, setSearchParams } =
-    useContext(ProductsDataContext);
+  const {
+    productsPage,
+    productsPageLoading,
+    productSearched,
+    productSearchedLoading,
+    fetchError,
+    searchParams,
+    setSearchParams,
+  } = useContext(ProductsDataContext);
 
-  const showSearchResult = useMemo(() => {
+  const searchIdProvided = useMemo(() => {
     if (searchParams?.get('id')) return true;
     return false;
   }, [searchParams]);
 
+  const errorMessage = useMemo(() => {
+    const defaultErrorMessage = 'Something went wrong - please try again later';
+    if (fetchError?.message === ErrorMessages.NotFound && searchIdProvided) {
+      return `There is no product with ${searchParams?.get('id') ? `id: ${searchParams?.get('id')}` : 'such id'}`;
+    }
+    if (fetchError?.message === ErrorMessages.NotFound || fetchError?.message === ErrorMessages.Client) {
+      return `${defaultErrorMessage} (client error)`;
+    }
+    if (fetchError?.message === ErrorMessages.Client) {
+      return `${defaultErrorMessage} (server error)`;
+    }
+    if (fetchError) {
+      return defaultErrorMessage;
+    }
+  }, [fetchError, searchIdProvided, searchParams]);
+
   const isLoading = useMemo(() => {
-    if (showSearchResult && productSearchedLoading) {
+    if (searchIdProvided && productSearchedLoading) {
       return true;
     }
-    if (!showSearchResult && productsPageLoading) {
+    if (!searchIdProvided && productsPageLoading) {
       return true;
     }
-    return false;
-  }, [showSearchResult, productsPageLoading, productSearchedLoading]);
+  }, [searchIdProvided, productsPageLoading, productSearchedLoading]);
 
   const clearSearchId = () => {
     if (setSearchParams) {
@@ -109,9 +133,9 @@ const ProductsTable = () => {
               </HeadTableCell>
             </TableRow>
           </TableHead>
-          {!isLoading && (
+          {!isLoading && !errorMessage && (
             <TableBody>
-              {showSearchResult
+              {searchIdProvided
                 ? productSearched && <ProductsTableRow product={productSearched} />
                 : productsPage?.data &&
                   productsPage.data.map((product) => <ProductsTableRow key={product.id} product={product} />)}
@@ -133,7 +157,8 @@ const ProductsTable = () => {
           </Box>
         </Box>
       )}
-      {!isLoading && !showSearchResult && (
+      {!isLoading && errorMessage && <ErrorMessage message={errorMessage} />}
+      {!isLoading && !searchIdProvided && !errorMessage && (
         <Pagination
           sx={(theme) => ({ float: 'right', marginTop: theme.spacing(1) })}
           count={productsPage?.total_pages}

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 export interface Product {
@@ -19,23 +20,49 @@ interface ProductData {
   data: Product;
 }
 
-const queryFn = (url: string) => () => fetch(url).then((res) => res.json());
+export enum ErrorMessages {
+  NotFound = '404 - not found',
+  Client = 'client error',
+  Server = 'server error',
+}
+
+const queryFn = (url: string, setError: (error: Error | null) => void) => () => {
+  setError(null);
+  return fetch(url).then((res) => {
+    if (res.status < 400) {
+      return res.json();
+    } else if (res.status === 404) {
+      setError(new Error(ErrorMessages.NotFound));
+      return res.json();
+    } else if (res.status < 500) {
+      setError(new Error(ErrorMessages.Client));
+      return res.json();
+    }
+    setError(new Error(ErrorMessages.Server));
+    return res.json();
+  });
+};
 
 export const useProductsPage = (page?: string | null) => {
   page = page ? page : '1';
+  const [error, setError] = useState<Error | null>(null);
   const queryURL = `https://reqres.in/api/products?per_page=5&page=${page}`;
   const queryKey = [`products-page-${page}`];
 
-  const { data, isPending, error } = useQuery<ProductsPageData>({ queryKey, queryFn: queryFn(queryURL) });
+  const { data, isPending } = useQuery<ProductsPageData>({ queryKey, queryFn: queryFn(queryURL, setError) });
 
   return { data, isPending, error };
 };
 
 export const useProduct = (id?: string | null) => {
+  const [error, setError] = useState<Error | null>(null);
   const queryURL = id ? `https://reqres.in/api/products?id=${id}` : '';
   const queryKey = id ? [`products-id-${id}`] : ['blank'];
 
-  const { data, isPending, error } = useQuery<ProductData>({ queryKey, queryFn: queryFn(queryURL) });
+  const { data, isPending } = useQuery<ProductData>({
+    queryKey,
+    queryFn: queryFn(queryURL, setError),
+  });
 
   return { data: data?.data, isPending, error };
 };
