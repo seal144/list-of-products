@@ -3,6 +3,7 @@ import { Dialog, DialogTitle, DialogContent, IconButton, Typography } from '@mui
 import CloseIcon from '@mui/icons-material/Close';
 
 import { Product } from '../api/productsApi';
+import parseKey from '../utils/parseKey';
 
 interface ProductModalProps {
   handleClose: () => void;
@@ -12,10 +13,6 @@ interface ProductModalProps {
 
 const ProductModal = ({ handleClose, open, product }: ProductModalProps) => {
   const productEntries = useMemo(() => Object.entries(product), [product]);
-
-  const parseKey = (key: string) => {
-    return key.replace('_', ' ').replace(/^\w/, (match) => match.toUpperCase());
-  };
 
   return (
     <Dialog open={open} onClose={handleClose}>

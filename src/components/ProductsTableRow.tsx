@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Product } from '../api/productsApi';
 import { TableCell, TableRow } from '@mui/material';
 
+import parseKey from '../utils/parseKey';
 import ProductModal from './ProductModal';
 import { NARROW_TABLE_CELL } from './ProductsTable';
 
@@ -21,7 +22,7 @@ const ProductsTableRow = ({ product }: { product: Product }) => {
         <TableCell width={NARROW_TABLE_CELL} align="left">
           {product.id}
         </TableCell>
-        <TableCell align="center">{product.name}</TableCell>
+        <TableCell align="center">{parseKey(product.name)}</TableCell>
         <TableCell width={NARROW_TABLE_CELL} align="right">
           {product.year}
         </TableCell>
