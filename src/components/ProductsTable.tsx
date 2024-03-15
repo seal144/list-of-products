@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState, useRef } from 'react';
 import {
   Box,
   CircularProgress,
@@ -36,6 +36,8 @@ const ProductsTable = () => {
     searchParams,
     setSearchParams,
   } = useContext(ProductsDataContext);
+  const [searchValue, setSearchValue] = useState('');
+  const setSearchParamsTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const searchIdProvided = useMemo(() => {
     if (searchParams?.get('id')) return true;
@@ -67,31 +69,40 @@ const ProductsTable = () => {
     }
   }, [searchIdProvided, productsPageLoading, productSearchedLoading]);
 
-  const clearSearchId = () => {
-    if (setSearchParams) {
-      setSearchParams((prevParams) => {
-        const page = prevParams.get('page');
-        return page ? `page=${page}` : '';
-      });
-    }
-  };
-
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.match(/[^0-9]/)) {
       event.target.value = '';
       return;
     }
-    if (setSearchParams && event.target.value) {
-      setSearchParams((prevParams) => {
-        const page = prevParams.get('page');
-        return `${page ? `page=${page}` : ''}&id=${event.target.value}`;
-      });
+
+    setSearchValue(event.target.value);
+  };
+
+  const clearSearchId = () => {
+    setSearchValue('');
+  };
+
+  // custom debounce for setSearchParams
+  useEffect(() => {
+    if (setSearchParamsTimeout.current) {
+      clearTimeout(setSearchParamsTimeout.current);
     }
 
-    if (!event.target.value) {
-      clearSearchId();
-    }
-  };
+    setSearchParamsTimeout.current = setTimeout(() => {
+      if (setSearchParams) {
+        setSearchParams((prevParams) => {
+          const page = prevParams.get('page');
+          return `${page ? `page=${page}` : ''}${searchValue ? `&id=${searchValue}` : ''}`;
+        });
+      }
+    }, 500);
+
+    return () => {
+      if (setSearchParamsTimeout.current) {
+        clearTimeout(setSearchParamsTimeout.current);
+      }
+    };
+  }, [searchValue, setSearchParams]);
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
     if (setSearchParams) {
@@ -107,13 +118,13 @@ const ProductsTable = () => {
       <TextField
         label="Search by ID"
         variant="outlined"
-        value={searchParams?.get('id') ? searchParams?.get('id') : ''}
+        value={searchValue}
         onChange={handleSearchChange}
         sx={(theme) => ({ marginBottom: theme.spacing(2) })}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={clearSearchId} disabled={!searchParams?.get('id')}>
+              <IconButton onClick={clearSearchId} disabled={!searchValue}>
                 <CloseIcon />
               </IconButton>
             </InputAdornment>
