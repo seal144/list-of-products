@@ -36,7 +36,7 @@ const ProductsTable = () => {
     searchParams,
     setSearchParams,
   } = useContext(ProductsDataContext);
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState(searchParams?.get('id') ? searchParams?.get('id') : '');
   const setSearchParamsTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const searchIdProvided = useMemo(() => {

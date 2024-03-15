@@ -1,6 +1,6 @@
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { useSearchParams, SetURLSearchParams } from 'react-router-dom';
-import { Product, useProduct, useProductsPage, ProductsPageData } from '../api/productsApi';
+import { Product, useProductQuery, useProductsPageQuery, ProductsPageData } from '../api/productsApi';
 
 interface ProductsDataContextValue {
   productsPage?: ProductsPageData;
@@ -24,12 +24,12 @@ const ProductsDataProvider = ({ children }: PropsWithChildren) => {
     data: productsPage,
     isPending: productsPageLoading,
     error: productsPageError,
-  } = useProductsPage(searchParams.get('page'));
+  } = useProductsPageQuery(searchParams.get('page'));
   const {
     data: productSearched,
     isPending: productSearchedLoading,
     error: productSearchedError,
-  } = useProduct(searchParams.get('id'));
+  } = useProductQuery(searchParams.get('id'));
   const [fetchError, setFetchError] = useState<Error | null>(null);
 
   useEffect(() => {

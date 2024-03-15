@@ -43,7 +43,7 @@ const queryFn = (url: string, setError: (error: Error | null) => void) => () => 
   });
 };
 
-export const useProductsPage = (page?: string | null) => {
+export const useProductsPageQuery = (page?: string | null) => {
   page = page ? page : '1';
   const [error, setError] = useState<Error | null>(null);
   const queryURL = `https://reqres.in/api/products?per_page=5&page=${page}`;
@@ -54,7 +54,7 @@ export const useProductsPage = (page?: string | null) => {
   return { data, isPending, error };
 };
 
-export const useProduct = (id?: string | null) => {
+export const useProductQuery = (id?: string | null) => {
   const [error, setError] = useState<Error | null>(null);
   const queryURL = id ? `https://reqres.in/api/products?id=${id}` : '';
   const queryKey = id ? [`products-id-${id}`] : ['blank'];
